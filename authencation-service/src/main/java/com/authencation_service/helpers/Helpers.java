@@ -1,5 +1,10 @@
 package com.authencation_service.helpers;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.util.Map;
 import java.util.Objects;
@@ -10,13 +15,23 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.coyote.BadRequestException;
+
+import com.authencation_service.config.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.authencation_service.dto.MFStackOtpDto;
+import com.authencation_service.entity.SmtpEntity;
 import com.authencation_service.reposatory.LoginTokenRepo;
 import com.authencation_service.reposatory.MobileTokenRepo;
+import com.authencation_service.reposatory.SmtpRepo;
+import com.authencation_service.services.MailService;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+
 
 @Component
 public class Helpers {
@@ -27,6 +42,17 @@ public class Helpers {
 	@Autowired
 	private LoginTokenRepo loginReposatory;
 
+	@Autowired
+	private MailService mailService;
+
+	@Autowired
+	private SmtpRepo smtpRepo;
+
+	private int otpExpiryMinutes = 5;
+
+	@Value("${email.template.contactus}")
+	private String contactUsTemplatePath;
+	
 	private final static String ALGORITHM = "AES";
 	private final static String HEX = "0123456789ABCDEF";
 	private final static String secretKey = "ncfecm@1ncfecm@1";
@@ -156,13 +182,39 @@ public class Helpers {
 			throw new BadRequestException("Only valid email id should be allowed to enter");
 		}
 	}
-	
-	
+
 	public boolean validateLoginToken(String mobileNo, String token) {
 		Timestamp now = new Timestamp(System.currentTimeMillis());
 		return loginReposatory.findByIdentifierAndToken(mobileNo, token).filter(data -> data.getExpiresAt() != null)
 				.filter(data -> data.getExpiresAt().after(now)).isPresent();
 	}
-	
-	
+
+	@Async
+	public void sendOtpMailAsync(String email, String name, String otp, HttpServletRequest request) {
+		SmtpEntity smtp = smtpRepo.findLatestSmtpDetails();
+		if (smtp == null) {
+			throw new RuntimeException("SMTP detail not found!!");
+		}
+		String[] to = { email };
+		String subject = "Your PROSPUR verification code";
+		String mailBody = getLoginOtpMessageCreate(name, otp, String.valueOf(otpExpiryMinutes));
+		int status = mailService.postMailAttach(to, new String[] {}, new String[] {}, mailBody, subject, "", "", -1, "",
+				smtp);
+		if (status > 0) {
+			System.err.println("OTP email sent to {}");
+			// log.info("OTP email sent to {}", email);
+		}
+	}
+
+	public String getLoginOtpMessageCreate(String name, String otp, String valueOf) {
+		try {
+			Path path = Paths.get(contactUsTemplatePath, "otp.html");
+			String content = Files.readString(path, StandardCharsets.UTF_8);
+			content = content.replace("__NAME__", name).replace("__OTP__", otp).replace("__EXPIRY__", valueOf);
+			return content;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return "";
+		}
+	}
 }

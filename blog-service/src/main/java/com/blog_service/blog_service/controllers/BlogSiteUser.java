@@ -51,10 +51,14 @@ public class BlogSiteUser {
 		Map<String, Object> authResponse = authFeignClient.validateToken(request);
 		Map<String, Object> data = (Map<String, Object>) authResponse.get("data");
 		
+		System.err.println("Data +++++++++ "+ data);
+		
 		String emailId = (String) data.get("emailId");
-		String blogSiteUserId =  (String) data.get("blogSiteUserId");
+		System.err.println("Data +++++++++ "+ emailId);
+		String blogSiteUserId =  (String) data.get("blogId");
+		System.err.println("Data +++++++++ "+ blogSiteUserId);
 		String siteUserId = (String) data.get("siteUserId");
-	
+		System.err.println("Data +++++++++ "+ siteUserId);
 		request.setBlogId(blogSiteUserId);
 		request.setSiteUserId(siteUserId);
 		

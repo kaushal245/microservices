@@ -7,14 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
-
-
-
-import org.apache.coyote.BadRequestException;
+import com.authencation_service.config.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
 import com.authencation_service.client.SiteUserFeignClient;
 import com.authencation_service.config.JwtUtil;
 import com.authencation_service.dto.MFStackOtpDto;
@@ -24,29 +20,19 @@ import com.authencation_service.entity.UserOtp;
 import com.authencation_service.helpers.Helpers;
 import com.authencation_service.reposatory.MobileTokenRepo;
 import com.authencation_service.reposatory.UserOtpRepository;
-
 import jakarta.transaction.Transactional;
-
-
 @Service
 public class RegistrationService {
 
-	
-	
-	private int otpExpiryMinutes = 5;
 
-	
+	private int otpExpiryMinutes = 5;	
 	private int tokenExpireTime = 5;
-
-	
 	
 	@Autowired
 	private UserOtpRepository otpRepo;
 
 	@Autowired
 	private Helpers commonFunction;
-
-	
 
 	@Autowired
 	private JwtUtil jwtUtil;

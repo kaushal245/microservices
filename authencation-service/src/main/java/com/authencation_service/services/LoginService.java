@@ -7,8 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 
 
-
-import org.apache.coyote.BadRequestException;
+import com.authencation_service.config.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

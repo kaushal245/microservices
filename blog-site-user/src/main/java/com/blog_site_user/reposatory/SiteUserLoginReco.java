@@ -65,5 +65,7 @@ public interface SiteUserLoginReco extends JpaRepository<SiteUserLogin, Integer>
 	                   @Param("fcmToken") String fcmToken);
 	
 	
+	
+	
 
 }

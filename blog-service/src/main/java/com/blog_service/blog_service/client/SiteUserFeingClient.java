@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.blog_service.blog_service.config.SiteUserFeignConfig;
 
-@FeignClient(name = "site-user-service", configuration = SiteUserFeignConfig.class)
+@FeignClient(name = "blog-site-user", configuration = SiteUserFeignConfig.class)
 public interface SiteUserFeingClient {
 
 	@GetMapping("/api/site-user/{userId}")
