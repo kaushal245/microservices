@@ -23,7 +23,7 @@ public class SiteUserController {
 
 	    @PostMapping("/verify-mobile")
 	    public HashMap<String, Object> verifyMobile(@RequestBody MobileVerifyRequest request) {
-	    	System.err.println(request.getPhone_no());
+	    	System.err.println("Phone nO "+request.getPhone_no());
 	        return siteUserService.verifyMobile(request);
 	    }
 	    

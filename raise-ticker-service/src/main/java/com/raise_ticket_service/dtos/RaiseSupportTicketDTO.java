@@ -1,4 +1,4 @@
-package com.webelement.apiuserprospur.dto;
+package com.raise_ticket_service.dtos;
 
 import java.sql.Timestamp;
 

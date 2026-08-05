@@ -26,70 +26,58 @@ public class SiteUserService {
 	@Transactional
 	public HashMap<String, Object> verifyMobile(MobileVerifyRequest request) {
 
-	    HashMap<String, Object> map = new HashMap<>();
+		HashMap<String, Object> map = new HashMap<>();
 
-	    String phoneNo = request.getPhone_no().trim();
-	    Timestamp now = new Timestamp(System.currentTimeMillis());
+		String phoneNo = request.getPhone_no().trim();
+		Timestamp now = new Timestamp(System.currentTimeMillis());
 
-	    SiteUserLogin user = siteUserRepo
-	            .findByMobileOrEmailAndStatus1(phoneNo)
-	            .stream()
-	            .findFirst()
-	            .orElse(null);
+		SiteUserLogin user = siteUserRepo.findByMobileOrEmailAndStatus1(phoneNo.trim()).stream().findFirst()
+				.orElse(null);
 
-	    // NEW USER
-	    if (user == null) {
+		System.err.print("check ================================" + user);
+		// NEW USER
+		if (user == null) {
 
-	        user = new SiteUserLogin();
-	        user.setMobileNo(phoneNo);
-	        user.setStatus((short) 1);
-	        user.setMStatus(1);
-	        user.setType(3);
-	        user.setRegDate(now);
+			user = new SiteUserLogin();
+			user.setMobileNo(phoneNo);
+			user.setStatus((short) 1);
+			user.setMStatus(1);
+			user.setType(3);
+			user.setRegDate(now);
 
-	        siteUserRepo.save(user);
+			siteUserRepo.save(user);
 
-	        map.put("success", true);
-	        map.put("message", "Mobile OTP verified successfully");
-	        map.put("data", Map.of(
-	                "mf_status", user.getMStatus(),
-	                "site_user_id", user.getUserId(),
-	                "name", ""
-	        ));
+			map.put("success", true);
+			map.put("message", "Mobile OTP verified successfully");
+			map.put("data", Map.of("mf_status", user.getMStatus(), "site_user_id", user.getUserId(), "name", ""));
 
-	        return map;
-	    }
+			return map;
+		}
 
-	    // Already verified
-	    if (user.getMStatus() != null && user.getMStatus() > 1) {
+		// Already verified
+		if (user.getMStatus() != null && user.getMStatus() > 1) {
 
-	        map.put("success", true);
-	        map.put("message", "Mobile OTP already verified");
-	        map.put("data", Map.of(
-	                "mf_status", user.getMStatus(),
-	                "site_user_id", user.getUserId(),
-	                "name", user.getName() == null ? "" : user.getName()
-	        ));
+			map.put("success", true);
+			map.put("message", "Mobile OTP already verified");
+			map.put("data", Map.of("mf_status", user.getMStatus(), "site_user_id", user.getUserId(), "name",
+					user.getName() == null ? "" : user.getName()));
 
-	        return map;
-	    }
+			return map;
+		}
 
-	    // Update existing user
-	    user.setMobileNo(phoneNo);
-	    user.setMStatus(1);
-	    user.setModDate(now);
+		// Update existing user
+		user.setMobileNo(phoneNo);
+		user.setMStatus(1);
+		user.setModDate(now);
 
-	    siteUserRepo.save(user);
+		siteUserRepo.save(user);
 
-	    map.put("success", true);
-	    map.put("message", "Mobile verified successfully");
-	    map.put("data", Map.of(
-	            "mf_status", user.getMStatus(),
-	            "site_user_id", user.getUserId(),
-	            "name", user.getName() == null ? "" : user.getName()
-	    ));
+		map.put("success", true);
+		map.put("message", "Mobile verified successfully");
+		map.put("data", Map.of("mf_status", user.getMStatus(), "site_user_id", user.getUserId(), "name",
+				user.getName() == null ? "" : user.getName()));
 
-	    return map;
+		return map;
 	}
 	
 	

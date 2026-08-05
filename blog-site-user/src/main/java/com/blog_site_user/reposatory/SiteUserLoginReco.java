@@ -29,6 +29,8 @@ public interface SiteUserLoginReco extends JpaRepository<SiteUserLogin, Integer>
 	@Query("SELECT s FROM SiteUserLogin s " + "WHERE (s.mobileNo = :identifier OR s.email = :identifier) "
 			+ "AND s.status = 1")
 	List<SiteUserLogin> findByMobileOrEmailAndStatus1(@Param("identifier") String identifier);
+	
+	
 
 	Optional<SiteUserLogin> findByUserId(Integer userId);
 

@@ -2,12 +2,15 @@ package com.raise_ticket_service.entities;
 
 import java.sql.Timestamp;
 
+
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,41 +19,24 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "t_raisesupportticket")
+@Table(name = "t_issuecategory")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
-public class RaiseSupportTicketEntity {
-
+@NoArgsConstructor
+@AllArgsConstructor
+public class IssueCategoryEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "i_raisesupportid")
-	private Integer raiseSupportId;
+	@Column(name = "i_issuecategoryid")
+	private Integer issueCategoryId;
 
-	@Column(name = "s_issuecategory")
-	private String issueCategory;
-
-	@Column(name = "s_subject")
-	private String subject;
-
-	@Lob
-	@Column(name = "s_description", columnDefinition = "LONGTEXT")
-	private String description;
-
-	@Column(name = "s_remarks")
-	private String remarks;
-
-	@Column(name = "i_status")
-	private Integer status;
-
+	@Column(name = "s_name", length = 255)
+	private String name;
+	@JsonIgnore
 	@Column(name = "ts_regdate")
 	private Timestamp regDate;
-
+	@JsonIgnore
 	@Column(name = "ts_moddate")
 	private Timestamp modDate;
-
-	@Column(name = "i_userid")
-	private Integer userId;
 }
