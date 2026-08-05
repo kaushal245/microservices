@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Microservices Demo (No Docker) — Eureka + API Gateway + Feign
 
 4 independent Spring Boot Maven projects. Run each with plain `mvn spring-boot:run`
@@ -132,3 +133,7 @@ instead of crashing, because the call is wrapped in a try/catch around
 - product-service: http://localhost:8082/h2-console (JDBC URL: `jdbc:h2:mem:productdb`)
 - user-service: http://localhost:8081/h2-console (JDBC URL: `jdbc:h2:mem:userdb`)
 (username `sa`, empty password)
+=======
+# microservices
+Distributed system
+>>>>>>> 164911a6fcb35e96de4739f129418097ea326a11
