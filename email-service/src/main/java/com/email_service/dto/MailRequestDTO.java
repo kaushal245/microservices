@@ -2,6 +2,7 @@ package com.email_service.dto;
 
 import com.email_service.entities.SmtpEntity;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
 
 @Data
@@ -9,7 +10,7 @@ public class MailRequestDTO {
 	 private String[] to;
 	    private String[] cc;
 	    private String[] bcc;
-
+	    
 	    private String message;
 	    private String subject;
 
@@ -21,4 +22,16 @@ public class MailRequestDTO {
 	    private String from;
 
 	    private SmtpEntity smtp;
+	    
+	    private String AttachmentPath ;
+	    private String AttachmentName;
+	    private Integer UserId;
+	    private String Remark;
+	    
+	    private String name;
+	    private String email;
+	    private Integer ticketId;
+	    private HttpServletRequest httpRequest;
+	    private String ticketSubject;
+	    
 }

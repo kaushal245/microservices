@@ -26,5 +26,13 @@ public class SiteUserLoginDTO {
 	private Date dob;
 	private Short status;
 	private Integer mStatus;
+	public SiteUserLoginDTO(String mobileNo, String email) {
+		super();
+		this.mobileNo = mobileNo;
+		this.email = email;
+	}
+	
+	
+	
 
 }

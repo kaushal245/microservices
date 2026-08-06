@@ -24,49 +24,26 @@ public class GlobalExceptionHandler implements org.springframework.boot.web.reac
     }
 
 
-    @Override
-    public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
+	@Override
+	public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
 
-        exchange.getResponse().setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
-        exchange.getResponse()
-                .getHeaders()
-                .setContentType(MediaType.APPLICATION_JSON);
-
-
-        Map<String, Object> response = new HashMap<>();
-
-        response.put("success", false);
-
-        if (ex.getMessage() != null &&
-                ex.getMessage().contains("Connection refused")) {
-
-            response.put("message", "Service is currently unavailable");
-            response.put("error", "DOWNSTREAM_SERVICE_ERROR");
-
-        } else {
-
-            response.put("message", "Something went wrong");
-            response.put("error", ex.getMessage());
-        }
-
-
-        byte[] bytes;
-
-        try {
-            bytes = objectMapper.writeValueAsBytes(response);
-        } catch (Exception e) {
-            bytes = "{\"success\":false,\"message\":\"Internal Server Error\"}"
-                    .getBytes();
-        }
-
-
-        return exchange.getResponse()
-                .writeWith(
-                    Mono.just(
-                        exchange.getResponse()
-                        .bufferFactory()
-                        .wrap(bytes)
-                    )
-                );
-    }
+		exchange.getResponse().setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+		exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
+		Map<String, Object> response = new HashMap<>();
+		response.put("success", false);
+		if (ex.getMessage() != null && ex.getMessage().contains("Connection refused")) {
+			response.put("message", "Service is currently unavailable");
+			response.put("error", "DOWNSTREAM_SERVICE_ERROR");
+		} else {
+			response.put("message", "Something went wrong");
+			response.put("error", ex.getMessage());
+		}
+		byte[] bytes;
+		try {
+			bytes = objectMapper.writeValueAsBytes(response);
+		} catch (Exception e) {
+			bytes = "{\"success\":false,\"message\":\"Internal Server Error\"}".getBytes();
+		}
+		return exchange.getResponse().writeWith(Mono.just(exchange.getResponse().bufferFactory().wrap(bytes)));
+	}
 }

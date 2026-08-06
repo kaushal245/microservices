@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.blog_site_user.dto.MobileVerifyRequest;
+import com.blog_site_user.dto.SiteUserLoginDTO;
 import com.blog_site_user.dto.SiteUserResponse;
 import com.blog_site_user.services.SiteUserService;
 
@@ -94,5 +96,20 @@ public class SiteUserController {
 		@PostMapping("/login/google")
 		public HashMap<String, Object> googleLogin(@RequestBody MobileVerifyRequest request) {
 			return siteUserService.googleLogin(request);
+		}
+		
+		@GetMapping("/support/{siteUserId}")
+		public HashMap<String, Object> getUserContactBySiteUserId(
+		        @PathVariable Integer siteUserId) {
+
+		    SiteUserLoginDTO contact =
+		            siteUserService.getUserContactBySiteUserId(siteUserId);
+
+		    HashMap<String, Object> response = new HashMap<>();
+		    response.put("success", true);
+		    response.put("email", contact.getEmail());
+		    response.put("name", contact.getMobileNo());
+
+		    return response;
 		}
 }

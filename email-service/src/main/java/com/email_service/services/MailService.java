@@ -4,10 +4,14 @@ import java.io.File;
 import java.util.Date;
 import java.util.Properties;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.email_service.dto.MailRequestDTO;
 import com.email_service.entities.SmtpEntity;
+import com.email_service.helpers.Helpers;
+import com.email_service.reposatory.SmtpRepo;
 
 import jakarta.activation.DataHandler;
 import jakarta.activation.DataSource;
@@ -26,125 +30,124 @@ import jakarta.mail.internet.MimeMultipart;
 @Service
 public class MailService  {
 	public int postMailAttach(MailRequestDTO request) {
-    try {
+		try {
 
-        if (request.getSmtp() == null) {
-            throw new IllegalStateException("No SMTP configuration found.");
-        }
+			if (request.getSmtp() == null) {
+				throw new IllegalStateException("No SMTP configuration found.");
+			}
 
-        SmtpEntity smtp = request.getSmtp();
+			SmtpEntity smtp = request.getSmtp();
 
-        // SMTP Properties
-        Properties properties = new Properties();
-        properties.put("mail.smtp.host", smtp.getHost());
+			// SMTP Properties
+			Properties properties = new Properties();
+			properties.put("mail.smtp.host", smtp.getHost());
 
-        if (smtp.getPort() != null && !smtp.getPort().isBlank()) {
-            properties.put("mail.smtp.port", smtp.getPort());
-        }
+			if (smtp.getPort() != null && !smtp.getPort().isBlank()) {
+				properties.put("mail.smtp.port", smtp.getPort());
+			}
 
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-        properties.put("mail.smtp.socketFactory.fallback", "false");
-        properties.put("mail.smtp.starttls.enable", "true");
-        properties.put("mail.smtp.ssl.protocols", "TLSv1.2");
+			properties.put("mail.smtp.auth", "true");
+			properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+			properties.put("mail.smtp.socketFactory.fallback", "false");
+			properties.put("mail.smtp.starttls.enable", "true");
+			properties.put("mail.smtp.ssl.protocols", "TLSv1.2");
 
-        // Authentication
-        Session session = Session.getInstance(properties, new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(
-                        smtp.getServerUsername(),
-                        smtp.getServerPassword());
-            }
-        });
+			// Authentication
+			Session session = Session.getInstance(properties, new Authenticator() {
+				@Override
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(smtp.getServerUsername(), smtp.getServerPassword());
+				}
+			});
 
-        MimeMessage mimeMessage = new MimeMessage(session);
+			MimeMessage mimeMessage = new MimeMessage(session);
 
-        mimeMessage.setFrom(new InternetAddress(smtp.getFrom(), smtp.getDisplayName()));
-        mimeMessage.setSubject(request.getSubject());
+			mimeMessage.setFrom(new InternetAddress(smtp.getFrom(), smtp.getDisplayName()));
+			mimeMessage.setSubject(request.getSubject());
 
-        if (request.getCheck() != null && request.getCheck() > 0) {
-            mimeMessage.addHeader("Disposition-Notification-To", smtp.getFrom());
-        }
+			if (request.getCheck() != null && request.getCheck() > 0) {
+				mimeMessage.addHeader("Disposition-Notification-To", smtp.getFrom());
+			}
 
-        // TO
-        if (request.getTo() != null && request.getTo().length > 0) {
-            InternetAddress[] toAddresses = new InternetAddress[request.getTo().length];
-            for (int i = 0; i < request.getTo().length; i++) {
-                toAddresses[i] = new InternetAddress(request.getTo()[i]);
-            }
-            mimeMessage.setRecipients(Message.RecipientType.TO, toAddresses);
-        }
+			// TO
+			if (request.getTo() != null && request.getTo().length > 0) {
+				InternetAddress[] toAddresses = new InternetAddress[request.getTo().length];
+				for (int i = 0; i < request.getTo().length; i++) {
+					toAddresses[i] = new InternetAddress(request.getTo()[i]);
+				}
+				mimeMessage.setRecipients(Message.RecipientType.TO, toAddresses);
+			}
 
-        // CC
-        if (request.getCc() != null && request.getCc().length > 0) {
-            InternetAddress[] ccAddresses = new InternetAddress[request.getCc().length];
-            for (int i = 0; i < request.getCc().length; i++) {
-                ccAddresses[i] = new InternetAddress(request.getCc()[i]);
-            }
-            mimeMessage.setRecipients(Message.RecipientType.CC, ccAddresses);
-        }
+			// CC
+			if (request.getCc() != null && request.getCc().length > 0) {
+				InternetAddress[] ccAddresses = new InternetAddress[request.getCc().length];
+				for (int i = 0; i < request.getCc().length; i++) {
+					ccAddresses[i] = new InternetAddress(request.getCc()[i]);
+				}
+				mimeMessage.setRecipients(Message.RecipientType.CC, ccAddresses);
+			}
 
-        // BCC
-        if (request.getBcc() != null && request.getBcc().length > 0) {
-            InternetAddress[] bccAddresses = new InternetAddress[request.getBcc().length];
-            for (int i = 0; i < request.getBcc().length; i++) {
-                bccAddresses[i] = new InternetAddress(request.getBcc()[i]);
-            }
-            mimeMessage.setRecipients(Message.RecipientType.BCC, bccAddresses);
-        }
+			// BCC
+			if (request.getBcc() != null && request.getBcc().length > 0) {
+				InternetAddress[] bccAddresses = new InternetAddress[request.getBcc().length];
+				for (int i = 0; i < request.getBcc().length; i++) {
+					bccAddresses[i] = new InternetAddress(request.getBcc()[i]);
+				}
+				mimeMessage.setRecipients(Message.RecipientType.BCC, bccAddresses);
+			}
 
-        // Email Body
-        MimeBodyPart bodyPart = new MimeBodyPart();
-        bodyPart.setContent(request.getMessage(), "text/html; charset=UTF-8");
+			// Email Body
+			MimeBodyPart bodyPart = new MimeBodyPart();
+			bodyPart.setContent(request.getMessage(), "text/html; charset=UTF-8");
 
-        Multipart multipart = new MimeMultipart();
-        multipart.addBodyPart(bodyPart);
+			Multipart multipart = new MimeMultipart();
+			multipart.addBodyPart(bodyPart);
 
-        // Attachments
-        if (request.getFilePath() != null && !request.getFilePath().isBlank()) {
+			// Attachments
+			if (request.getFilePath() != null && !request.getFilePath().isBlank()) {
 
-            if (request.getLocalFileName() != null
-                    && request.getLocalFileName().contains(",")) {
+				if (request.getLocalFileName() != null && request.getLocalFileName().contains(",")) {
 
-                String[] fileNames = request.getLocalFileName().split(",");
-                String[] filePaths = request.getFilePath().split(",");
+					String[] fileNames = request.getLocalFileName().split(",");
+					String[] filePaths = request.getFilePath().split(",");
 
-                for (int i = 0; i < fileNames.length; i++) {
+					for (int i = 0; i < fileNames.length; i++) {
 
-                    File file = new File(filePaths[i].trim());
+						File file = new File(filePaths[i].trim());
 
-                    if (file.exists()) {
-                        MimeBodyPart attachment = new MimeBodyPart();
-                        attachment.setDataHandler(new DataHandler(new FileDataSource(file)));
-                        attachment.setFileName(fileNames[i].trim());
-                        multipart.addBodyPart(attachment);
-                    }
-                }
+						if (file.exists()) {
+							MimeBodyPart attachment = new MimeBodyPart();
+							attachment.setDataHandler(new DataHandler(new FileDataSource(file)));
+							attachment.setFileName(fileNames[i].trim());
+							multipart.addBodyPart(attachment);
+						}
+					}
 
-            } else {
+				} else {
 
-                File file = new File(request.getFilePath());
+					File file = new File(request.getFilePath());
 
-                if (file.exists()) {
-                    MimeBodyPart attachment = new MimeBodyPart();
-                    attachment.setDataHandler(new DataHandler(new FileDataSource(file)));
-                    attachment.setFileName(request.getLocalFileName());
-                    multipart.addBodyPart(attachment);
-                }
-            }
-        }
+					if (file.exists()) {
+						MimeBodyPart attachment = new MimeBodyPart();
+						attachment.setDataHandler(new DataHandler(new FileDataSource(file)));
+						attachment.setFileName(request.getLocalFileName());
+						multipart.addBodyPart(attachment);
+					}
+				}
+			}
 
-        mimeMessage.setContent(multipart);
-        mimeMessage.setSentDate(new Date());
+			mimeMessage.setContent(multipart);
+			mimeMessage.setSentDate(new Date());
 
-        Transport.send(mimeMessage);
+			Transport.send(mimeMessage);
 
-        return 1;
+			return 1;
 
-    } catch (Exception e) {
-        e.printStackTrace();
-        return 0;
-    }
-}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+	
+	
 }

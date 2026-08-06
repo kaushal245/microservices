@@ -370,4 +370,10 @@ public class SiteUserService {
 
 	    return map;
 	}
+	
+	public SiteUserLoginDTO getUserContactBySiteUserId(Integer siteUserId) {
+		SiteUserLogin user = siteUserRepo.findById(siteUserId)
+	            .orElseThrow(() -> new RuntimeException("Site user not found"));
+	    return new SiteUserLoginDTO(user.getName(),user.getEmail());
+	}
 }

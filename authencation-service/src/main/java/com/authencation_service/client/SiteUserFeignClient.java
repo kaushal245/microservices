@@ -20,26 +20,19 @@ public interface SiteUserFeignClient {
 	
 	
 	 @PostMapping("/api/site-user/check-email")
-	 HashMap<String, Object> checkEmail(
-	            @RequestBody MFStackOtpDto request);
-
+	 HashMap<String, Object> checkEmail(@RequestBody MFStackOtpDto request);
 
 		@PostMapping("/api/site-user/verify-email")
-		 HashMap<String, Object> verifyEmail(@RequestBody MFStackOtpDto request);
-
-
+		HashMap<String, Object> verifyEmail(@RequestBody MFStackOtpDto request);
 	    @PostMapping("/api/site-user/update-name")
-	    HashMap<String, Object> updateName(
-	            @RequestBody MFStackOtpDto request);
+	    HashMap<String, Object> updateName(@RequestBody MFStackOtpDto request);
 
 
 	    @GetMapping("/api/site-user/{userId}")
-	    siteUserResponse getUser(
-	            @PathVariable Integer userId);
+	    siteUserResponse getUser(@PathVariable Integer userId);
 	    
 	    @PostMapping("/api/site-user/email-verify-with-google")
-	    public HashMap<String,Object> updateEmailWithGoogle(
-	            @RequestBody MFStackOtpDto request);
+	    public HashMap<String,Object> updateEmailWithGoogle(@RequestBody MFStackOtpDto request);
 	    
 		@PostMapping("/api/site-user/login/validate-login-user")
 		HashMap<String, Object> validateLoginUser(@RequestBody MFStackOtpDto request);
