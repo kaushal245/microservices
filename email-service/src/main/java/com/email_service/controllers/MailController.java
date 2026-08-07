@@ -135,19 +135,18 @@ public class MailController implements SendMail {
 			String fileName = helpers.writeHTMLFile(mailBody, file_maillog + "/" + filePath,
 					"np-" + System.currentTimeMillis());
 
-			MailRequestDTO mailRequest = new MailRequestDTO();
-
-			mailRequest.setTo(to);
-			
-			mailRequest.setCc(new String[] {});
-			mailRequest.setBcc(new String[] {});
-			mailRequest.setSubject(subject);
-			mailRequest.setMessage(mailBody);
-			mailRequest.setAttachmentPath("");
-			mailRequest.setAttachmentName("");
-			mailRequest.setUserId(-1);
-			mailRequest.setRemark("");
-			mailRequest.setSmtp(smtpDetail);
+			MailRequestDTO mailRequest = MailRequestDTO.builder()
+			        .to(to)
+			        .cc(new String[]{})
+			        .bcc(new String[]{})
+			        .subject(subject)
+			        .message(mailBody)
+			        .AttachmentPath("")
+			        .AttachmentName("")
+			        .UserId(-1)
+			        .Remark("")
+			        .smtp(smtpDetail)
+			        .build();
 			int status = mailService.postMailAttach(mailRequest);
 
 			String ipLocal = helpers.getLocalIp();
@@ -160,4 +159,7 @@ public class MailController implements SendMail {
 					"", ipLocal, 1);
 
 		}
+
+
+	
 }

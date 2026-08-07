@@ -9,4 +9,5 @@ import com.email_service.dto.MailRequestDTO;
 public interface SendMail {
 	
 	public ResponseEntity<?> sendMail(@RequestBody MailRequestDTO request);
+	
 }

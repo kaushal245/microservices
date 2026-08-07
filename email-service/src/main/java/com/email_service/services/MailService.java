@@ -6,11 +6,13 @@ import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.email_service.dto.MailRequestDTO;
 import com.email_service.entities.SmtpEntity;
 import com.email_service.helpers.Helpers;
+import com.email_service.impl.SendMail;
 import com.email_service.reposatory.SmtpRepo;
 
 import jakarta.activation.DataHandler;
@@ -64,11 +66,9 @@ public class MailService  {
 
 			mimeMessage.setFrom(new InternetAddress(smtp.getFrom(), smtp.getDisplayName()));
 			mimeMessage.setSubject(request.getSubject());
-
 			if (request.getCheck() != null && request.getCheck() > 0) {
 				mimeMessage.addHeader("Disposition-Notification-To", smtp.getFrom());
 			}
-
 			// TO
 			if (request.getTo() != null && request.getTo().length > 0) {
 				InternetAddress[] toAddresses = new InternetAddress[request.getTo().length];
@@ -77,7 +77,6 @@ public class MailService  {
 				}
 				mimeMessage.setRecipients(Message.RecipientType.TO, toAddresses);
 			}
-
 			// CC
 			if (request.getCc() != null && request.getCc().length > 0) {
 				InternetAddress[] ccAddresses = new InternetAddress[request.getCc().length];
@@ -86,7 +85,6 @@ public class MailService  {
 				}
 				mimeMessage.setRecipients(Message.RecipientType.CC, ccAddresses);
 			}
-
 			// BCC
 			if (request.getBcc() != null && request.getBcc().length > 0) {
 				InternetAddress[] bccAddresses = new InternetAddress[request.getBcc().length];
@@ -95,26 +93,18 @@ public class MailService  {
 				}
 				mimeMessage.setRecipients(Message.RecipientType.BCC, bccAddresses);
 			}
-
 			// Email Body
 			MimeBodyPart bodyPart = new MimeBodyPart();
 			bodyPart.setContent(request.getMessage(), "text/html; charset=UTF-8");
-
 			Multipart multipart = new MimeMultipart();
 			multipart.addBodyPart(bodyPart);
-
 			// Attachments
 			if (request.getFilePath() != null && !request.getFilePath().isBlank()) {
-
 				if (request.getLocalFileName() != null && request.getLocalFileName().contains(",")) {
-
 					String[] fileNames = request.getLocalFileName().split(",");
 					String[] filePaths = request.getFilePath().split(",");
-
 					for (int i = 0; i < fileNames.length; i++) {
-
 						File file = new File(filePaths[i].trim());
-
 						if (file.exists()) {
 							MimeBodyPart attachment = new MimeBodyPart();
 							attachment.setDataHandler(new DataHandler(new FileDataSource(file)));
@@ -122,11 +112,8 @@ public class MailService  {
 							multipart.addBodyPart(attachment);
 						}
 					}
-
 				} else {
-
 					File file = new File(request.getFilePath());
-
 					if (file.exists()) {
 						MimeBodyPart attachment = new MimeBodyPart();
 						attachment.setDataHandler(new DataHandler(new FileDataSource(file)));
@@ -135,12 +122,9 @@ public class MailService  {
 					}
 				}
 			}
-
 			mimeMessage.setContent(multipart);
 			mimeMessage.setSentDate(new Date());
-
 			Transport.send(mimeMessage);
-
 			return 1;
 
 		} catch (Exception e) {
@@ -148,6 +132,4 @@ public class MailService  {
 			return 0;
 		}
 	}
-	
-	
 }

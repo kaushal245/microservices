@@ -3,9 +3,11 @@ package com.email_service.dto;
 import com.email_service.entities.SmtpEntity;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class MailRequestDTO {
 	 private String[] to;
 	    private String[] cc;
